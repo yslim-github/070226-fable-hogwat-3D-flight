@@ -1,0 +1,18 @@
+{
+  "name": "arcanum-keep",
+  "version": "1.0.0",
+  "description": "Procedurally generated 3D magic-castle exploration and broomstick flight game, playable in the browser",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --minify --outfile=dist/game.js",
+    "dev": "esbuild src/main.js --bundle --outfile=dist/game.js --watch --servedir=."
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:41729/git/yslim-github/070226-fable-hogwat-3D-flight"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "esbuild": "^0.23.0",
+    "three": "^0.166.0"
+  }
+}

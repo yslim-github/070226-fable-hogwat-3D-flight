@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arcanum Keep — Broomstick Flight</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0c1220; }
+  #game { display: block; width: 100%; height: 100%; }
+  .hud { position: fixed; color: #f2ead8; font-family: Georgia, 'Times New Roman', serif;
+         text-shadow: 0 1px 4px rgba(0,0,0,.8); user-select: none; pointer-events: none; }
+  #title  { top: 14px; left: 18px; font-size: 15px; letter-spacing: 2px; opacity: .85; }
+  #mode   { top: 36px; left: 18px; font-size: 12px; letter-spacing: 3px; color: #d7a63c; }
+  #rings  { top: 14px; right: 18px; font-size: 18px; color: #ffd98a; }
+  #speed  { top: 40px; right: 18px; font-size: 13px; opacity: .8; }
+  #msg    { bottom: 60px; left: 50%; transform: translateX(-50%); font-size: 17px;
+            opacity: 0; transition: opacity .4s; text-align: center; }
+  #cross  { top: 50%; left: 50%; width: 4px; height: 4px; margin: -2px;
+            background: rgba(255,255,255,.7); border-radius: 50%; }
+  #overlay {
+    position: fixed; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px; cursor: pointer;
+    background: radial-gradient(ellipse at center, rgba(10,14,28,.55), rgba(6,8,16,.92));
+    color: #f2ead8; font-family: Georgia, serif; text-align: center;
+  }
+  #overlay h1 { margin: 0; font-size: 42px; font-weight: normal; letter-spacing: 6px;
+                color: #ffd98a; text-shadow: 0 0 24px rgba(255,180,80,.35); }
+  #overlay h2 { margin: 0 0 10px; font-size: 15px; font-weight: normal; letter-spacing: 3px; opacity: .75; }
+  #overlay table { border-collapse: collapse; font-size: 14px; opacity: .9; }
+  #overlay td { padding: 3px 14px; text-align: left; }
+  #overlay td:first-child { color: #d7a63c; text-align: right; font-variant: small-caps; }
+  #overlay .go { margin-top: 16px; font-size: 16px; letter-spacing: 2px; color: #fff;
+                 animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .45; } }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="title" class="hud">ARCANUM KEEP</div>
+<div id="mode" class="hud"></div>
+<div id="rings" class="hud"></div>
+<div id="speed" class="hud"></div>
+<div id="msg" class="hud"></div>
+<div id="cross" class="hud"></div>
+<div id="overlay">
+  <h1>ARCANUM KEEP</h1>
+  <h2>A CASTLE OF MAGIC · A BROOM · AN OPEN SKY</h2>
+  <table>
+    <tr><td>mouse</td><td>look / steer</td></tr>
+    <tr><td>w a s d</td><td>move</td></tr>
+    <tr><td>f</td><td>mount / dismount broomstick</td></tr>
+    <tr><td>shift</td><td>sprint · broom boost</td></tr>
+    <tr><td>space</td><td>jump · climb while flying</td></tr>
+  </table>
+  <div>Fly through all the golden rings scattered over the valley.</div>
+  <div class="go">— click to begin —</div>
+</div>
+<script src="dist/game.js"></script>
+</body>
+</html>
