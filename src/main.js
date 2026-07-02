@@ -83,17 +83,26 @@ const rings = [];
 // ---------------------------------------------------------------------------
 const keys = new Set();
 let pointerLocked = false;
+let playing = false;      // true while the game accepts input (locked OR fallback)
+let dragLook = false;     // fallback mode: look by dragging when pointer lock fails
 addEventListener('keydown', e => {
   if (e.repeat) return;
   keys.add(e.code);
-  if (e.code === 'KeyF' && pointerLocked) toggleFly();
+  if (!playing && (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyF')) {
+    startGame();
+    return;
+  }
+  if (e.code === 'KeyF' && playing) toggleFly();
+  if (e.code === 'Escape' && playing && dragLook) pause();
 });
 addEventListener('keyup', e => keys.delete(e.code));
 
 let yaw = 0;            // facing the castle from the south at spawn
 let pitch = -0.05;
 addEventListener('mousemove', e => {
-  if (!pointerLocked) return;
+  if (!playing) return;
+  // with pointer lock: always steer; without it: steer while dragging
+  if (!pointerLocked && !(dragLook && (e.buttons & 1))) return;
   yaw -= e.movementX * 0.0023;
   pitch -= e.movementY * 0.0023;
   pitch = clamp(pitch, -1.45, 1.45);
@@ -105,13 +114,41 @@ const hudRings = document.getElementById('rings');
 const hudSpeed = document.getElementById('speed');
 const hudMode = document.getElementById('mode');
 
-overlay.addEventListener('click', () => {
-  canvas.requestPointerLock();
+function beginPlay() {
+  playing = true;
+  overlay.style.display = 'none';
+}
+function pause() {
+  playing = false;
+  overlay.style.display = 'flex';
+}
+
+function startGame() {
   audio.resume();
-});
+  if (dragLook) { beginPlay(); return; }
+  let settled = false;
+  const req = canvas.requestPointerLock ? canvas.requestPointerLock() : null;
+  if (req && req.catch) req.catch(() => {});
+  // if the browser (or an embedding iframe) refuses pointer lock, fall back
+  // to drag-to-look so the game still starts
+  setTimeout(() => {
+    if (settled || document.pointerLockElement === canvas) return;
+    settled = true;
+    dragLook = true;
+    beginPlay();
+    say('Pointer lock unavailable — drag with the mouse to look around', 5);
+  }, 350);
+  document.addEventListener('pointerlockchange', function once() {
+    if (document.pointerLockElement === canvas) settled = true;
+    document.removeEventListener('pointerlockchange', once);
+  });
+}
+
+overlay.addEventListener('click', startGame);
 document.addEventListener('pointerlockchange', () => {
   pointerLocked = document.pointerLockElement === canvas;
-  overlay.style.display = pointerLocked ? 'none' : 'flex';
+  if (pointerLocked) beginPlay();
+  else if (!dragLook) pause();
 });
 
 let msgTimer = 0;
@@ -356,7 +393,7 @@ function frame() {
   const dt = Math.min(clock.getDelta(), 0.05);
   time += dt;
 
-  if (pointerLocked) {
+  if (playing) {
     hasPlayed = true;
     if (player.flying) updateFlying(dt);
     else updateWalking(dt);
